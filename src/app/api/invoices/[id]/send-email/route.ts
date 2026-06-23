@@ -3,13 +3,12 @@ import { createAdminSupabase } from '@/lib/supabase-server'
 import { Resend } from 'resend'
 import { formatRupiah, formatDate } from '@/lib/utils'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export async function POST(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const resend = new Resend(process.env.RESEND_API_KEY)
     const supabase = await createAdminSupabase()
     const { to, message } = await request.json()
 
