@@ -8,7 +8,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { Schedule } from '@/types'
 import { getScheduleStatusColor, getScheduleStatusLabel, formatDate } from '@/lib/utils'
-import { ArrowLeft, Calendar, Clock, MapPin, User, Briefcase, Trash2, Edit2 } from 'lucide-react'
+import { ArrowLeft, Calendar, Clock, MapPin, User, Briefcase, Trash2, FileText } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
@@ -181,18 +181,19 @@ export default function ScheduleDetailPage() {
           </div>
         </div>
 
-        {/* Link buat invoice */}
+        {/* Buat Invoice dari booking ini */}
         {schedule.status !== 'cancelled' && (
           <Link
-            href={`/invoices/new`}
-            className="card flex items-center gap-3 hover:shadow-md transition-shadow"
+            href={`/invoices/new?schedule_id=${scheduleId}`}
+            className="card flex items-center gap-3 active:scale-[0.98] transition-all"
+            style={{ background: 'linear-gradient(135deg, #EDE9FE, #F5F3FF)' }}
           >
-            <div className="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center">
-              <Edit2 size={16} className="text-violet-600" />
+            <div className="w-10 h-10 bg-violet-600 rounded-xl flex items-center justify-center flex-shrink-0">
+              <FileText size={16} className="text-white" />
             </div>
-            <div>
-              <p className="font-semibold text-sm">Buat Invoice</p>
-              <p className="text-xs text-gray-400">Tagih pekerjaan ini</p>
+            <div className="flex-1">
+              <p className="font-bold text-sm text-violet-700">Buat Invoice dari Booking Ini</p>
+              <p className="text-xs text-violet-400 mt-0.5">Klien & jenis pekerjaan akan otomatis terisi</p>
             </div>
           </Link>
         )}

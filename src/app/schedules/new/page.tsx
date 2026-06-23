@@ -6,17 +6,16 @@ export const dynamic = 'force-dynamic'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
-import { Client, ScheduleFormData } from '@/types'
+import { Client, RateCard, ScheduleFormData } from '@/types'
 import { ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
-
-const JOB_TYPES = ['Foto Produk', 'Foto Editorial', 'Foto Fashion', 'Video Iklan', 'Lookbook', 'Brand Ambassador', 'Event', 'Lainnya']
 
 export default function NewSchedulePage() {
   const router = useRouter()
   const supabase = createClient()
   const [clients, setClients] = useState<Client[]>([])
+  const [rateCards, setRateCards] = useState<RateCard[]>([])
   const [loading, setLoading] = useState(false)
   const [form, setForm] = useState<ScheduleFormData>({
     title: '',
@@ -37,8 +36,12 @@ export default function NewSchedulePage() {
   async function loadClients() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    const { data } = await supabase.from('clients').select('id, name').eq('user_id', user.id).order('name')
-    setClients((data ?? []) as Client[])
+    const [clientsRes, rateRes] = await Promise.all([
+      supabase.from('clients').select('id, name').eq('user_id', user.id).order('name'),
+      supabase.from('rate_cards').select('id, name').eq('user_id', user.id).eq('is_active', true).order('name'),
+    ])
+    setClients((clientsRes.data ?? []) as Client[])
+    setRateCards((rateRes.data ?? []) as RateCard[])
   }
 
   function setField<K extends keyof ScheduleFormData>(key: K, value: ScheduleFormData[K]) {
@@ -110,9 +113,14 @@ export default function NewSchedulePage() {
           <div>
             <label className="label">Jenis Pekerjaan</label>
             <select className="input" value={form.job_type ?? ''} onChange={e => setField('job_type', e.target.value)}>
-              <option value="">Pilih jenis</option>
-              {JOB_TYPES.map(j => <option key={j} value={j}>{j}</option>)}
+              <option value="">Pilih dari rate card</option>
+              {rateCards.map(rc => <option key={rc.id} value={rc.name}>{rc.name}</option>)}
             </select>
+            {rateCards.length === 0 && (
+              <p className="text-xs text-amber-500 mt-1">
+                Belum ada rate card. <Link href="/profile/rate-cards" className="underline">Tambah dulu</Link>.
+              </p>
+            )}
           </div>
         </div>
 

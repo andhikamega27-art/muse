@@ -3,10 +3,10 @@
 export const dynamic = 'force-dynamic'
 
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
-import { Client, RateCard, InvoiceFormData } from '@/types'
+import { Client, RateCard } from '@/types'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
@@ -20,8 +20,10 @@ type LineItem = {
   unit_price: number
 }
 
-export default function NewInvoicePage() {
+function NewInvoiceForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const scheduleId = searchParams.get('schedule_id')
   const supabase = createClient()
   const [clients, setClients] = useState<Client[]>([])
   const [rateCards, setRateCards] = useState<RateCard[]>([])
@@ -54,12 +56,36 @@ export default function NewInvoicePage() {
       supabase.from('invoices').select('invoice_number').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
     ])
 
-    setClients((clientsRes.data ?? []) as Client[])
-    setRateCards(rateRes.data ?? [])
+    const loadedClients = (clientsRes.data ?? []) as Client[]
+    const loadedRateCards = (rateRes.data ?? []) as RateCard[]
+    setClients(loadedClients)
+    setRateCards(loadedRateCards)
 
     const prefix = profileRes.data?.invoice_prefix ?? 'INV'
     const lastNum = lastInvRes.data?.[0]?.invoice_number?.match(/(\d+)$/)?.[1]
     setInvoiceNumber(generateInvoiceNumber(prefix, lastNum ? parseInt(lastNum) : 0))
+
+    // Pre-fill dari booking
+    if (scheduleId) {
+      const { data: schedule } = await supabase
+        .from('schedules')
+        .select('*, client:clients(id, name)')
+        .eq('id', scheduleId)
+        .single()
+
+      if (schedule) {
+        if (schedule.client_id) setClientId(schedule.client_id)
+        if (schedule.notes) setNotes(schedule.notes)
+
+        // Cari rate card yang cocok dengan job_type
+        const matchedRC = loadedRateCards.find(rc => rc.name === schedule.job_type)
+        if (matchedRC) {
+          setItems([{ rate_card_id: matchedRC.id, description: matchedRC.name, quantity: 1, unit_price: matchedRC.price }])
+        } else if (schedule.job_type) {
+          setItems([{ description: schedule.job_type, quantity: 1, unit_price: 0 }])
+        }
+      }
+    }
   }
 
   function addItem() {
@@ -308,5 +334,13 @@ export default function NewInvoicePage() {
         </button>
       </form>
     </div>
+  )
+}
+
+export default function NewInvoicePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-violet-600 border-t-transparent rounded-full animate-spin" /></div>}>
+      <NewInvoiceForm />
+    </Suspense>
   )
 }
