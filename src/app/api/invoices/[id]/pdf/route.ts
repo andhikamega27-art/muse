@@ -34,7 +34,7 @@ export async function GET(
     })
 
     const pdfBuffer: Buffer = await renderToBuffer(
-      React.createElement(InvoicePDF, { invoice, template, qrCode })
+      React.createElement(InvoicePDF, { invoice, template, qrCode }) as React.ReactElement<any>
     )
 
     return new NextResponse(pdfBuffer as unknown as BodyInit, {
