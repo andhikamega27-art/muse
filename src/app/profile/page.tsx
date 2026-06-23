@@ -91,7 +91,7 @@ export default function ProfilePage() {
       toast.error('Set username dulu di Edit Profil')
       return
     }
-    const url = `https://muse-gamma-nine.vercel.app/${profile.username}`
+    const url = `https://app-muse.vercel.app/${profile.username}`
     try {
       await navigator.clipboard.writeText(url)
     } catch {
@@ -217,7 +217,7 @@ export default function ProfilePage() {
                     : <Link2 size={12} className="text-white/70" />}
                   <span className="text-[11px] font-semibold"
                     style={{ color: copied ? '#86efac' : 'rgba(255,255,255,0.7)' }}>
-                    {copied ? 'Link disalin!' : `muse-gamma-nine.vercel.app/${profile.username}`}
+                    {copied ? 'Link disalin!' : `app-muse.vercel.app/${profile.username}`}
                   </span>
                 </button>
               ) : (

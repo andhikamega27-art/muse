@@ -13,7 +13,7 @@ export default function ShareSection({
   instagram?: string | null
 }) {
   const [copied, setCopied] = useState(false)
-  const url = `https://muse-gamma-nine.vercel.app/${username}`
+  const url = `https://app-muse.vercel.app/${username}`
 
   async function handleCopy() {
     try {
