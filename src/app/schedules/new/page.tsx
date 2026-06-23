@@ -35,7 +35,7 @@ export default function NewSchedulePage() {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
     const { data } = await supabase.from('clients').select('id, name').eq('user_id', user.id).order('name')
-    setClients(data ?? [])
+    setClients((data ?? []) as Client[])
   }
 
   function setField<K extends keyof ScheduleFormData>(key: K, value: ScheduleFormData[K]) {

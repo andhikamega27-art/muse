@@ -60,9 +60,8 @@ export async function GET(request: NextRequest) {
       color: { dark: '#374151', light: '#ffffff' },
     })
 
-    // @ts-expect-error — react-pdf type mismatch
     const pdfBuffer: Buffer = await renderToBuffer(
-      React.createElement(InvoicePDF, { invoice, template, qrCode })
+      React.createElement(InvoicePDF, { invoice, template, qrCode }) as React.ReactElement<any>
     )
 
     return new NextResponse(pdfBuffer as unknown as BodyInit, {

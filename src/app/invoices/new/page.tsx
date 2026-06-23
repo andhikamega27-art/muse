@@ -51,7 +51,7 @@ export default function NewInvoicePage() {
       supabase.from('invoices').select('invoice_number').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
     ])
 
-    setClients(clientsRes.data ?? [])
+    setClients((clientsRes.data ?? []) as Client[])
     setRateCards(rateRes.data ?? [])
 
     const prefix = profileRes.data?.invoice_prefix ?? 'INV'
