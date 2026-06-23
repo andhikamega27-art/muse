@@ -83,9 +83,10 @@ function ProfesionalPDF({ invoice, qrCode }: { invoice: any; qrCode?: string }) 
         </View>
         <View style={{ flex: 1, backgroundColor: '#F9FAFB', borderRadius: 6, borderWidth: 1, borderColor: '#E5E7EB', borderStyle: 'solid', padding: 14 }}>
           <Text style={{ fontSize: 7.5, fontFamily: 'Helvetica-Bold', color: '#5B21B6', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>CATATAN</Text>
-          <Text style={{ fontSize: 8.5, color: '#6B7280', lineHeight: 1.6 }}>
-            {invoice.notes ?? 'Mohon melakukan pembayaran sebelum tanggal jatuh tempo dan konfirmasi pembayaran ke nomor yang tertera.'}
-          </Text>
+          {invoice.notes
+            ? <Text style={{ fontSize: 8.5, color: '#6B7280', lineHeight: 1.6 }}>{invoice.notes}</Text>
+            : <Text style={{ fontSize: 8.5, color: '#D1D5DB', lineHeight: 1.6, fontStyle: 'italic' }}>-</Text>
+          }
         </View>
       </View>
 
@@ -158,11 +159,12 @@ function ProfesionalPDF({ invoice, qrCode }: { invoice: any; qrCode?: string }) 
           <Text style={{ fontSize: 14, fontFamily: 'Helvetica-Bold', color: '#5B21B6', fontStyle: 'italic' }}>Thank You!</Text>
           <Text style={{ fontSize: 7.5, color: '#9CA3AF', marginTop: 2 }}>{muse?.invoice_footer ?? 'Atas kepercayaan dan kerjasamanya.'}</Text>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          {muse?.email && <Text style={{ fontSize: 7.5, color: '#6B7280', marginRight: 14 }}>✉ {muse.email}</Text>}
-          {muse?.phone && <Text style={{ fontSize: 7.5, color: '#6B7280', marginRight: 14 }}>📞 {muse.phone}</Text>}
-          {qrCode && <Image src={qrCode} style={{ width: 52, height: 52 }} />}
-        </View>
+        {qrCode && (
+          <View style={{ alignItems: 'center' }}>
+            <Image src={qrCode} style={{ width: 52, height: 52 }} />
+            <Text style={{ fontSize: 6, color: '#9CA3AF', marginTop: 2 }}>SCAN QR</Text>
+          </View>
+        )}
       </View>
     </Page>
   )
@@ -218,7 +220,7 @@ function FemininPDF({ invoice, qrCode }: { invoice: any; qrCode?: string }) {
         <View style={{ flex: 1, backgroundColor: PINK_LIGHT, borderRadius: 8, padding: 14 }}>
           <Text style={{ fontSize: 13, fontFamily: 'Helvetica-Bold', color: PINK, marginBottom: 6 }}>Thank You! ♥</Text>
           <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.6 }}>
-            {invoice.notes ?? `Terima kasih sudah mempercayakan kebutuhanmu bersama ${muse?.name ?? 'kami'}.`}
+            {invoice.notes ?? `Terima kasih sudah mempercayakan kebutuhanmu kepada ${muse?.name ?? 'kami'}.`}
           </Text>
         </View>
       </View>
@@ -287,10 +289,6 @@ function FemininPDF({ invoice, qrCode }: { invoice: any; qrCode?: string }) {
             <Text style={{ fontSize: 7, color: '#9CA3AF', marginTop: 3, textAlign: 'center' }}>SCAN QR</Text>
           </View>
         )}
-        <View style={{ alignItems: 'flex-end' }}>
-          {muse?.email && <Text style={{ fontSize: 8, color: '#6B7280', marginBottom: 3 }}>✉ {muse.email}</Text>}
-          {muse?.phone && <Text style={{ fontSize: 8, color: '#6B7280' }}>📞 {muse.phone}</Text>}
-        </View>
       </View>
     </Page>
   )
@@ -398,7 +396,7 @@ function ModernPDF({ invoice, qrCode }: { invoice: any; qrCode?: string }) {
         <View style={{ flex: 1, backgroundColor: 'white', borderRadius: 8, padding: 14, marginRight: 14, borderLeftWidth: 4, borderLeftColor: PURPLE, borderLeftStyle: 'solid' }}>
           <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: PURPLE, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>THANK YOU!</Text>
           <Text style={{ fontSize: 8.5, color: '#6B7280', lineHeight: 1.6 }}>
-            {invoice.notes ?? `Terima kasih atas kepercayaan Anda kepada ${muse?.name ?? 'kami'}.`}
+            {invoice.notes ?? `Terima kasih atas kepercayaan Anda kepada ${muse?.name ?? ''}.`.replace(/ \.$/, '.')}
           </Text>
         </View>
         {/* Totals */}
@@ -423,18 +421,9 @@ function ModernPDF({ invoice, qrCode }: { invoice: any; qrCode?: string }) {
 
       {/* ── FOOTER ── */}
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '12 40 0 40', borderTopWidth: 1, borderTopColor: '#E5E7EB', borderTopStyle: 'solid', backgroundColor: 'white', marginTop: 4 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <View style={{ width: 28, height: 28, backgroundColor: PURPLE, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginRight: 6 }}>
-            <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: 'white' }}>m</Text>
-          </View>
-          <View>
-            <Text style={{ fontSize: 11, fontFamily: 'Helvetica-Bold', color: '#1F2937' }}>muse</Text>
-            <Text style={{ fontSize: 7, color: '#9CA3AF' }}>{muse?.invoice_footer ?? 'Invoice by Muse'}</Text>
-          </View>
-        </View>
-        <View style={{ alignItems: 'center' }}>
-          {muse?.email && <Text style={{ fontSize: 7.5, color: '#6B7280', marginBottom: 2 }}>✉ {muse.email}</Text>}
-          {muse?.phone && <Text style={{ fontSize: 7.5, color: '#6B7280' }}>📞 {muse.phone}</Text>}
+        <View>
+          <Text style={{ fontSize: 16, fontFamily: 'Helvetica-Bold', color: PURPLE, fontStyle: 'italic' }}>Thank You!</Text>
+          <Text style={{ fontSize: 7.5, color: '#9CA3AF', marginTop: 2 }}>{muse?.invoice_footer ?? 'Atas kepercayaan dan kerjasamanya.'}</Text>
         </View>
         {qrCode && (
           <View style={{ alignItems: 'center' }}>
