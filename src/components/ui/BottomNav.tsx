@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { Home, LayoutDashboard, UserCircle } from 'lucide-react'
+import { Home, BarChart2, UserCircle } from 'lucide-react'
 
 const navItems = [
-  { href: '/dashboard', label: 'Beranda',   icon: Home,            key: 'dashboard' },
-  { href: '/invoices',  label: 'Kelola',    icon: LayoutDashboard, key: 'invoices'  },
-  { href: '/profile',   label: 'Profil',    icon: UserCircle,      key: 'profile'   },
+  { href: '/dashboard', label: 'Beranda',   icon: Home,      key: 'dashboard' },
+  { href: '/reports',   label: 'Statistik', icon: BarChart2, key: 'reports'   },
+  { href: '/profile',   label: 'Profil',    icon: UserCircle, key: 'profile'  },
 ]
 
 export default function BottomNav({ active }: { active: string }) {
@@ -30,9 +30,7 @@ export default function BottomNav({ active }: { active: string }) {
               href={href}
               className="flex flex-col items-center gap-[5px] px-6 py-2.5 rounded-[32px] transition-all duration-200 active:scale-90"
               style={{
-                background: isActive
-                  ? 'rgba(255,255,255,0.15)'
-                  : 'transparent',
+                background: isActive ? 'rgba(255,255,255,0.15)' : 'transparent',
                 boxShadow: isActive
                   ? '0 2px 16px rgba(124,58,237,0.3), 0 1px 0 rgba(255,255,255,0.12) inset'
                   : 'none',

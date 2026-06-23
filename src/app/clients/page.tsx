@@ -120,7 +120,7 @@ export default function ClientsPage() {
         )}
       </div>
 
-      <BottomNav active="invoices" />
+      <BottomNav active="dashboard" />
     </div>
   )
 }

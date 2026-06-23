@@ -142,7 +142,7 @@ export default function InvoicesPage() {
         )}
       </div>
 
-      <BottomNav active="invoices" />
+      <BottomNav active="dashboard" />
     </div>
   )
 }

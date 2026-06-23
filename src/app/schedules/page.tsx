@@ -195,7 +195,7 @@ export default function SchedulesPage() {
         )}
       </div>
 
-      <BottomNav active="invoices" />
+      <BottomNav active="dashboard" />
     </div>
   )
 }
