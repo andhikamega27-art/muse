@@ -20,6 +20,13 @@ export type UserProfile = {
   invoice_footer?: string
   invoice_template?: InvoiceTemplate
   kop_surat_url?: string
+  username?: string
+  tagline?: string
+  city?: string
+  bio?: string
+  instagram?: string
+  whatsapp?: string
+  brands?: string[]
   created_at: string
   updated_at: string
 }
