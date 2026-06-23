@@ -9,6 +9,38 @@ import { ArrowLeft, Check, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 
+function Section({ title }: { title: string }) {
+  return <p className="text-[11px] font-extrabold text-[#9CA3AF] uppercase tracking-widest pt-2">{title}</p>
+}
+
+function Field({
+  label, value, onChange, type = 'text', placeholder = '', prefix = '', hint = '', required = false, disabled = false,
+}: {
+  label: string; value: string; onChange: (v: string) => void
+  type?: string; placeholder?: string; prefix?: string; hint?: string; required?: boolean; disabled?: boolean
+}) {
+  return (
+    <div>
+      <label className="block text-[13px] font-bold text-[#374151] mb-1.5">
+        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
+      </label>
+      <div className="flex items-center rounded-2xl overflow-hidden"
+        style={{ background: '#fff', border: '1.5px solid #E8E8E8' }}>
+        {prefix && <span className="pl-4 text-[14px] text-[#9CA3AF] font-semibold flex-shrink-0">{prefix}</span>}
+        <input
+          type={type}
+          className="flex-1 px-4 py-3.5 text-[15px] font-medium text-[#111827] placeholder-[#9CA3AF] focus:outline-none bg-transparent"
+          placeholder={placeholder}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          disabled={disabled}
+        />
+      </div>
+      {hint && <p className="text-[11px] text-[#9CA3AF] mt-1">{hint}</p>}
+    </div>
+  )
+}
+
 export default function EditProfilePage() {
   const supabase = createClient()
   const router = useRouter()
@@ -103,34 +135,6 @@ export default function EditProfilePage() {
     router.push('/profile')
   }
 
-  const Section = ({ title }: { title: string }) => (
-    <p className="text-[11px] font-extrabold text-[#9CA3AF] uppercase tracking-widest pt-2">{title}</p>
-  )
-
-  const Field = ({ label, fieldKey, type = 'text', placeholder = '', prefix = '', required = false }: {
-    label: string; fieldKey: string; type?: string; placeholder?: string; prefix?: string; required?: boolean
-  }) => (
-    <div>
-      <label className="block text-[13px] font-bold text-[#374151] mb-1.5">
-        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
-      </label>
-      <div className="flex items-center rounded-2xl overflow-hidden"
-        style={{ background: '#fff', border: '1.5px solid #E8E8E8' }}>
-        {prefix && (
-          <span className="pl-4 text-[14px] text-[#9CA3AF] font-semibold flex-shrink-0">{prefix}</span>
-        )}
-        <input
-          type={type}
-          className="flex-1 px-4 py-3.5 text-[15px] font-medium text-[#111827] placeholder-[#9CA3AF] focus:outline-none bg-transparent"
-          placeholder={placeholder}
-          value={(form as any)[fieldKey]}
-          onChange={e => set(fieldKey, fieldKey === 'invoice_prefix' ? e.target.value.toUpperCase() : e.target.value)}
-          disabled={loading}
-        />
-      </div>
-    </div>
-  )
-
   return (
     <div className="min-h-screen pb-10" style={{ background: '#F8F8FC' }}>
       <div className="flex items-center justify-between px-4 pt-14 pb-4 bg-white"
@@ -152,15 +156,18 @@ export default function EditProfilePage() {
 
         <Section title="Profil Publik" />
 
-        <Field label="Nama Lengkap" fieldKey="name" placeholder="Nama kamu" required />
+        <Field label="Nama Lengkap" value={form.name} onChange={v => set('name', v)}
+          placeholder="Nama kamu" required disabled={loading} />
 
         <div>
           <label className="block text-[13px] font-bold text-[#374151] mb-1.5">Username</label>
           <div className="flex items-center rounded-2xl overflow-hidden"
             style={{ background: '#fff', border: '1.5px solid #E8E8E8' }}>
-            <span className="pl-4 text-[14px] text-[#9CA3AF] font-semibold">app-muse.vercel.app/</span>
+            <span className="pl-4 text-[13px] text-[#9CA3AF] font-semibold flex-shrink-0 whitespace-nowrap">
+              app-muse.vercel.app/
+            </span>
             <input
-              className="flex-1 pr-4 py-3.5 text-[15px] font-medium text-[#111827] placeholder-[#9CA3AF] focus:outline-none bg-transparent"
+              className="flex-1 pr-4 py-3.5 text-[15px] font-medium text-[#111827] placeholder-[#9CA3AF] focus:outline-none bg-transparent min-w-0"
               placeholder="username"
               value={form.username}
               onChange={e => set('username', e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))}
@@ -169,13 +176,15 @@ export default function EditProfilePage() {
           </div>
           {form.username && (
             <p className="text-[11px] text-[#9CA3AF] mt-1">
-              Link: <span className="text-[#7C3AED] font-bold">app-muse.vercel.app/{form.username}</span>
+              Link publik: <span className="text-[#7C3AED] font-bold">app-muse.vercel.app/{form.username}</span>
             </p>
           )}
         </div>
 
-        <Field label="Tagline" fieldKey="tagline" placeholder="cth: Fashion Model • Commercial Talent" />
-        <Field label="Kota" fieldKey="city" placeholder="cth: Surabaya, Indonesia" />
+        <Field label="Tagline" value={form.tagline} onChange={v => set('tagline', v)}
+          placeholder="cth: Fashion Model • Commercial Talent" disabled={loading} />
+        <Field label="Kota" value={form.city} onChange={v => set('city', v)}
+          placeholder="cth: Surabaya, Indonesia" disabled={loading} />
 
         <div>
           <label className="block text-[13px] font-bold text-[#374151] mb-1.5">Bio</label>
@@ -224,22 +233,27 @@ export default function EditProfilePage() {
         </div>
 
         <Section title="Kontak" />
-        <Field label="No. WhatsApp" fieldKey="whatsapp" type="tel" placeholder="08xxxxxxxxxx" />
-        <Field label="Instagram" fieldKey="instagram" placeholder="username_kamu" prefix="@" />
+        <Field label="No. WhatsApp" value={form.whatsapp} onChange={v => set('whatsapp', v)}
+          type="tel" placeholder="08xxxxxxxxxx" disabled={loading} />
+        <Field label="Instagram" value={form.instagram} onChange={v => set('instagram', v.replace('@', ''))}
+          placeholder="username_kamu" prefix="@" disabled={loading} />
 
         <Section title="Invoice & Pembayaran" />
-        <Field label="No. WhatsApp (untuk klien)" fieldKey="phone" type="tel" placeholder="08xxxxxxxxxx" />
-        <Field label="Alamat" fieldKey="address" placeholder="Alamat lengkap" />
-        <Field label="Nama Bank" fieldKey="bank_name" placeholder="cth: BCA, Mandiri" />
-        <Field label="No. Rekening" fieldKey="bank_account" placeholder="Nomor rekening" />
-        <Field label="Nama di Rekening" fieldKey="bank_holder" placeholder="Pemilik rekening" />
-        <Field label="Prefix Invoice" fieldKey="invoice_prefix" placeholder="INV" />
-        {form.invoice_prefix && (
-          <p className="text-[12px] text-[#9CA3AF] -mt-2 font-medium">
-            Contoh: <span className="text-[#5B21B6] font-bold">{form.invoice_prefix}-20260624-001</span>
-          </p>
-        )}
-        <Field label="Footer Invoice" fieldKey="invoice_footer" placeholder="cth: Terima kasih!" />
+        <Field label="No. WhatsApp (kontak klien)" value={form.phone} onChange={v => set('phone', v)}
+          type="tel" placeholder="08xxxxxxxxxx" disabled={loading} />
+        <Field label="Alamat" value={form.address} onChange={v => set('address', v)}
+          placeholder="Alamat lengkap" disabled={loading} />
+        <Field label="Nama Bank" value={form.bank_name} onChange={v => set('bank_name', v)}
+          placeholder="cth: BCA, Mandiri" disabled={loading} />
+        <Field label="No. Rekening" value={form.bank_account} onChange={v => set('bank_account', v)}
+          placeholder="Nomor rekening" disabled={loading} />
+        <Field label="Nama di Rekening" value={form.bank_holder} onChange={v => set('bank_holder', v)}
+          placeholder="Pemilik rekening" disabled={loading} />
+        <Field label="Prefix Invoice" value={form.invoice_prefix}
+          onChange={v => set('invoice_prefix', v.toUpperCase())} placeholder="INV" disabled={loading}
+          hint={form.invoice_prefix ? `Contoh: ${form.invoice_prefix}-20260624-001` : ''} />
+        <Field label="Footer Invoice" value={form.invoice_footer} onChange={v => set('invoice_footer', v)}
+          placeholder="cth: Terima kasih!" disabled={loading} />
 
         <button onClick={handleSave} disabled={saving || loading}
           className="w-full py-4 rounded-2xl font-extrabold text-[16px] text-white active:scale-[0.98] transition-all disabled:opacity-50"
