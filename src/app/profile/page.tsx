@@ -9,7 +9,7 @@ import { createClient } from '@/lib/supabase'
 import { UserProfile } from '@/types'
 import {
   User, Shield, Tag, ChevronRight, LogOut,
-  FileText, Calendar, Users, Mail, LayoutTemplate, Camera,
+  FileText, Calendar, Users, Mail, LayoutTemplate, Camera, Link2, Check,
 } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '@/components/ui/BottomNav'
@@ -23,6 +23,7 @@ export default function ProfilePage() {
   const [stats, setStats] = useState({ invoices: 0, clients: 0, schedules: 0 })
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [copied, setCopied] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { loadData() }, [])
@@ -83,6 +84,27 @@ export default function ProfilePage() {
     setProfile(prev => prev ? { ...prev, avatar_url: avatarUrl } : prev)
     toast.success('Foto profil diperbarui')
     setUploading(false)
+  }
+
+  async function handleCopyLink() {
+    if (!profile?.username) {
+      toast.error('Set username dulu di Edit Profil')
+      return
+    }
+    const url = `https://muse-gamma-nine.vercel.app/${profile.username}`
+    try {
+      await navigator.clipboard.writeText(url)
+    } catch {
+      const el = document.createElement('input')
+      el.value = url
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand('copy')
+      document.body.removeChild(el)
+    }
+    setCopied(true)
+    toast.success('Link rate card disalin!')
+    setTimeout(() => setCopied(false), 2500)
   }
 
   async function handleSignOut() {
@@ -185,8 +207,26 @@ export default function ProfilePage() {
             <>
               <h1 className="text-white font-extrabold text-[22px] tracking-tight">{profile?.name}</h1>
               <p className="text-white/60 text-[13px] font-medium mt-1">{profile?.email}</p>
-              {profile?.phone && (
-                <p className="text-white/50 text-[12px] font-medium mt-0.5">{profile.phone}</p>
+              {profile?.username ? (
+                <button
+                  onClick={handleCopyLink}
+                  className="flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-full transition-all active:scale-95"
+                  style={{ background: copied ? 'rgba(34,197,94,0.2)' : 'rgba(255,255,255,0.15)' }}>
+                  {copied
+                    ? <Check size={12} className="text-green-300" />
+                    : <Link2 size={12} className="text-white/70" />}
+                  <span className="text-[11px] font-semibold"
+                    style={{ color: copied ? '#86efac' : 'rgba(255,255,255,0.7)' }}>
+                    {copied ? 'Link disalin!' : `muse-gamma-nine.vercel.app/${profile.username}`}
+                  </span>
+                </button>
+              ) : (
+                <Link href="/profile/edit"
+                  className="flex items-center gap-1.5 mt-2 px-3 py-1.5 rounded-full"
+                  style={{ background: 'rgba(255,255,255,0.12)' }}>
+                  <Link2 size={12} className="text-white/50" />
+                  <span className="text-[11px] font-semibold text-white/50">Set username dulu</span>
+                </Link>
               )}
             </>
           )}
