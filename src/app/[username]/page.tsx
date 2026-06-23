@@ -1,9 +1,10 @@
 import { createServerSupabase } from '@/lib/supabase-server'
 import { notFound } from 'next/navigation'
 import { formatRupiah } from '@/lib/utils'
-import { MapPin, Instagram, MessageCircle, Copy, CheckCircle, Star } from 'lucide-react'
+import { MapPin, Instagram, MessageCircle, Star } from 'lucide-react'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import ShareSection from './ShareSection'
 
 export const dynamic = 'force-dynamic'
 
@@ -200,7 +201,11 @@ export default async function PublicProfilePage({ params }: Props) {
         )}
 
         {/* ── Share ── */}
-        <ShareButton username={params.username} />
+        <ShareSection
+          username={params.username}
+          whatsapp={profile.whatsapp}
+          instagram={profile.instagram}
+        />
 
         {/* Powered by */}
         <p className="text-center text-[11px] text-[#9CA3AF] pb-4">
@@ -211,25 +216,3 @@ export default async function PublicProfilePage({ params }: Props) {
   )
 }
 
-function ShareButton({ username }: { username: string }) {
-  return (
-    <div className="bg-white rounded-2xl px-4 py-4 space-y-3"
-      style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}>
-      <p className="text-[13px] font-extrabold text-[#374151]">Bagikan Profil</p>
-      <CopyLinkButton username={username} />
-    </div>
-  )
-}
-
-function CopyLinkButton({ username }: { username: string }) {
-  'use client'
-  return (
-    <a
-      href={`https://app-muse.vercel.app/${username}`}
-      className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl text-[13px] font-bold"
-      style={{ background: '#EDE9FE', color: '#7C3AED' }}>
-      <Copy size={15} />
-      app-muse.vercel.app/{username}
-    </a>
-  )
-}
