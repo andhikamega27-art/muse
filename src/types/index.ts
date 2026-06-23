@@ -13,6 +13,7 @@ export type UserProfile = {
   bank_account?: string
   bank_name?: string
   bank_holder?: string
+  avatar_url?: string
   signature_url?: string
   logo_url?: string
   invoice_prefix: string

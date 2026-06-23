@@ -9,10 +9,12 @@ import { createClient } from '@/lib/supabase'
 import { UserProfile } from '@/types'
 import {
   User, Shield, Tag, ChevronRight, LogOut,
-  FileText, Calendar, Users, Mail, LayoutTemplate,
+  FileText, Calendar, Users, Mail, LayoutTemplate, Camera,
 } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '@/components/ui/BottomNav'
+import { useRef } from 'react'
+import toast from 'react-hot-toast'
 
 export default function ProfilePage() {
   const supabase = createClient()
@@ -20,6 +22,8 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [stats, setStats] = useState({ invoices: 0, clients: 0, schedules: 0 })
   const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => { loadData() }, [])
 
@@ -41,6 +45,44 @@ export default function ProfilePage() {
       schedules: scheduleRes.count ?? 0,
     })
     setLoading(false)
+  }
+
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('Ukuran foto maksimal 2MB')
+      return
+    }
+
+    setUploading(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) return
+
+    const ext = file.name.split('.').pop()
+    const path = `${user.id}/avatar.${ext}`
+
+    const { error: uploadError } = await supabase.storage
+      .from('avatars')
+      .upload(path, file, { upsert: true })
+
+    if (uploadError) {
+      toast.error('Gagal upload foto')
+      setUploading(false)
+      return
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars')
+      .getPublicUrl(path)
+
+    const avatarUrl = `${publicUrl}?t=${Date.now()}`
+
+    await supabase.from('profiles').update({ avatar_url: avatarUrl }).eq('id', user.id)
+    setProfile(prev => prev ? { ...prev, avatar_url: avatarUrl } : prev)
+    toast.success('Foto profil diperbarui')
+    setUploading(false)
   }
 
   async function handleSignOut() {
@@ -98,15 +140,39 @@ export default function ProfilePage() {
 
         <div className="relative z-10 flex flex-col items-center text-center">
           {/* Avatar */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleAvatarChange}
+          />
           {loading ? (
             <div className="w-24 h-24 rounded-3xl skeleton mb-4" />
           ) : (
-            <div
-              className="w-24 h-24 rounded-3xl flex items-center justify-center mb-4"
-              style={{ background: 'rgba(255,255,255,0.2)', border: '3px solid rgba(255,255,255,0.35)' }}
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="relative w-24 h-24 rounded-3xl mb-4 overflow-hidden active:scale-95 transition-all"
+              style={{ border: '3px solid rgba(255,255,255,0.35)' }}
             >
-              <span className="text-white font-extrabold text-[32px]">{initials}</span>
-            </div>
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center"
+                  style={{ background: 'rgba(255,255,255,0.2)' }}>
+                  <span className="text-white font-extrabold text-[32px]">{initials}</span>
+                </div>
+              )}
+              <div className="absolute inset-0 flex items-end justify-center pb-1.5"
+                style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.45) 0%, transparent 60%)' }}>
+                {uploading ? (
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <Camera size={14} className="text-white" />
+                )}
+              </div>
+            </button>
           )}
 
           {/* Name & email */}
