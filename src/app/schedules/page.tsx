@@ -140,7 +140,7 @@ export default function SchedulesPage() {
         )}
       </div>
 
-      <BottomNav active="schedules" />
+      <BottomNav active="invoices" />
     </div>
   )
 }

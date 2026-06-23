@@ -165,7 +165,7 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      <BottomNav active="reports" />
+      <BottomNav active="invoices" />
     </div>
   )
 }
