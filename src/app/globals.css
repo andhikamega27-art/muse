@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --brand: #5B21B6;
+  --brand-mid: #7C3AED;
+  --brand-light: #EDE9FE;
+  --bg: #F8F8FC;
+  --surface: #FFFFFF;
+  --label: #111827;
+  --label-2: #6B7280;
+  --label-3: #9CA3AF;
+  --separator: rgba(0,0,0,0.07);
+  --radius: 16px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.09);
+}
+
+@layer base {
+  * { box-sizing: border-box; }
+  html { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; }
+  body {
+    background-color: var(--bg);
+    color: var(--label);
+    font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  input, select, textarea, button { font-family: inherit; }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input, textarea, select { -webkit-appearance: none; }
+}
+
+@layer components {
+
+  /* ── Buttons ── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl
+           font-bold text-[15px] text-white active:scale-[0.97] transition-all
+           disabled:opacity-40 disabled:cursor-not-allowed;
+    background: linear-gradient(135deg, var(--brand) 0%, var(--brand-mid) 100%);
+    box-shadow: 0 4px 14px rgba(91,33,182,0.35);
+  }
+  .btn-primary:hover:not(:disabled) { filter: brightness(1.06); }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl
+           font-bold text-[15px] text-[#374151] bg-white active:scale-[0.97] transition-all
+           disabled:opacity-40;
+    box-shadow: var(--shadow);
+  }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px;
+    box-shadow: var(--shadow);
+  }
+
+  /* ── Inputs ── */
+  .input {
+    @apply w-full px-4 py-3 rounded-2xl text-[15px] font-semibold
+           text-[#111827] placeholder-[#9CA3AF]
+           focus:outline-none focus:ring-2 focus:ring-violet-500/40
+           transition-all;
+    background: #F3F4F6;
+    border: none;
+  }
+  select.input {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 36px;
+    cursor: pointer;
+  }
+
+  .label {
+    @apply block text-[11px] font-bold uppercase tracking-widest mb-2;
+    color: var(--label-3);
+  }
+
+  /* ── Badge ── */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-bold;
+  }
+
+  /* ── Bottom Nav ── */
+  .nav-item {
+    @apply flex flex-col items-center gap-1 py-2 px-1 transition-all duration-200;
+    color: var(--label-3);
+    font-size: 10px;
+    font-weight: 700;
+  }
+  .nav-item.active { color: var(--brand-mid); }
+
+  /* ── Page Header ── */
+  .page-header {
+    @apply flex items-center justify-between px-4 py-4 bg-white sticky top-0 z-10;
+    border-bottom: 1px solid var(--separator);
+  }
+
+  /* ── Section title ── */
+  .section-title {
+    @apply font-extrabold text-[#111827];
+    font-size: 17px;
+    letter-spacing: -0.3px;
+  }
+}
+
+/* Safe area */
+.pb-safe { padding-bottom: env(safe-area-inset-bottom, 12px); }
+
+/* Scrollbar hide */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Skeleton */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, #F3F4F6 25%, #E5E7EB 50%, #F3F4F6 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 10px;
+}
+
+/* Glass */
+.glass {
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.25);
+}
