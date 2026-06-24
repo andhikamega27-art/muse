@@ -38,7 +38,10 @@ export default function SecurityPage() {
     e.preventDefault()
     if (!newEmail.trim()) return
     setSavingEmail(true)
-    const { error } = await supabase.auth.updateUser({ email: newEmail.trim() })
+    const { error } = await supabase.auth.updateUser(
+      { email: newEmail.trim() },
+      { emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/profile` }
+    )
     if (error) { toast.error(error.message); setSavingEmail(false); return }
     setEmailSent(true)
     setSavingEmail(false)
