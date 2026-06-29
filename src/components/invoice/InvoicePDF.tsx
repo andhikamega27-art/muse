@@ -170,125 +170,123 @@ function ProfesionalPDF({ invoice, qrCode }: { invoice: any; qrCode?: string }) 
   )
 }
 
-// ─── Template 2: FEMININ (Pink beauty, referensi kedua) ───────────────────────
+// ─── Template 2: FEMININ (Rose elegant, referensi kedua) ─────────────────────
 
 function FemininPDF({ invoice, qrCode }: { invoice: any; qrCode?: string }) {
   const muse = invoice.user
   const client = invoice.client
   const items = invoice.invoice_items ?? []
-  const PINK = '#C2185B'
-  const PINK_LIGHT = '#FCE4EC'
-  const PINK_MID = '#E91E8C'
+  const ROSE = '#C9897B'
+  const ROSE_LIGHT = '#FAE5DF'
+  const CREAM = '#FAF8F5'
+  const DARK = '#2D1B1B'
+  const GREY = '#7A6060'
+
+  const dpPercent = invoice.dp_percent ?? 0
+  const dpAmount = dpPercent > 0 ? Math.round(invoice.total * dpPercent / 100) : 0
+  const kekurangan = invoice.total - dpAmount
 
   return (
-    <Page size="A4" style={{ fontFamily: 'Helvetica', fontSize: 10, backgroundColor: '#FDF0F5', paddingBottom: 30 }}>
+    <Page size="A4" style={{ fontFamily: 'Helvetica', fontSize: 10, backgroundColor: CREAM, paddingBottom: 30 }}>
 
       {/* ── HEADER ── */}
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: '28 40 8 40' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', padding: '32 40 12 40' }}>
+        {/* Left: contact */}
         <View>
-          <Text style={{ fontSize: 11, fontFamily: 'Helvetica-Bold', color: PINK, letterSpacing: 2 }}>INVOICE</Text>
+          {muse?.email && <Text style={{ fontSize: 9, color: GREY, marginBottom: 3 }}>{muse.email}</Text>}
+          {muse?.phone && <Text style={{ fontSize: 9, color: GREY }}>{muse.phone}</Text>}
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <Text style={{ fontSize: 9, color: '#9E9E9E', marginRight: 4 }}>NO.</Text>
-          <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: '#1F2937' }}>{invoice.invoice_number}</Text>
-        </View>
+        {/* Right: Invoice script */}
+        <Text style={{ fontSize: 42, fontFamily: 'Helvetica-Bold', color: ROSE, fontStyle: 'italic', letterSpacing: -1 }}>Invoice</Text>
       </View>
 
-      {/* ── TITLE ── */}
-      <View style={{ alignItems: 'center', paddingVertical: 16 }}>
-        <Text style={{ fontSize: 26, fontFamily: 'Helvetica-Bold', color: PINK, letterSpacing: 0 }}>{muse?.name}</Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
-          <Text style={{ fontSize: 11, color: '#1F2937', letterSpacing: 3, marginHorizontal: 8 }}>✦</Text>
-          <Text style={{ fontSize: 13, fontFamily: 'Helvetica-Bold', color: '#1F2937', letterSpacing: 4 }}>WITH MUSE</Text>
-          <Text style={{ fontSize: 11, color: '#1F2937', letterSpacing: 3, marginHorizontal: 8 }}>✦</Text>
-        </View>
-        <Text style={{ fontSize: 8.5, color: '#6B7280', marginTop: 8 }}>DATE: {formatDate(invoice.invoice_date)}</Text>
-      </View>
+      {/* Rose divider */}
+      <View style={{ height: 2, backgroundColor: ROSE, marginHorizontal: 40, marginBottom: 18 }} />
 
-      {/* Dotted divider */}
-      <View style={{ borderTopWidth: 1.5, borderTopColor: PINK, borderTopStyle: 'dashed', marginHorizontal: 40, marginBottom: 14 }} />
-
-      {/* ── BILL TO + THANK YOU ── */}
-      <View style={{ flexDirection: 'row', padding: '0 40 14 40' }}>
-        <View style={{ flex: 1, marginRight: 14 }}>
-          <Text style={{ fontSize: 8, fontFamily: 'Helvetica-Bold', color: PINK, textTransform: 'uppercase', marginBottom: 8 }}>BILL TO:</Text>
-          <Text style={{ fontSize: 11, fontFamily: 'Helvetica-Bold', color: '#1F2937', marginBottom: 4 }}>{client?.name ?? '-'}</Text>
-          {client?.address && <Text style={{ fontSize: 8, color: '#6B7280', marginBottom: 2 }}>{client.address}</Text>}
-          {client?.email && <Text style={{ fontSize: 8, color: '#6B7280', marginBottom: 2 }}>{client.email}</Text>}
-          {client?.phone && <Text style={{ fontSize: 8, color: '#6B7280' }}>{client.phone}</Text>}
-        </View>
-        <View style={{ flex: 1, backgroundColor: PINK_LIGHT, borderRadius: 8, padding: 14 }}>
-          <Text style={{ fontSize: 13, fontFamily: 'Helvetica-Bold', color: PINK, marginBottom: 6 }}>Thank You! ♥</Text>
-          <Text style={{ fontSize: 8.5, color: '#555', lineHeight: 1.6 }}>
-            {invoice.notes ?? `Terima kasih sudah mempercayakan kebutuhanmu kepada ${muse?.name ?? 'kami'}.`}
+      {/* ── KEPADA + BOOKING DATE ── */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', padding: '0 40 16 40' }}>
+        <View>
+          <Text style={{ fontSize: 8.5, color: GREY, marginBottom: 4 }}>Kepada:</Text>
+          <Text style={{ fontSize: 16, fontFamily: 'Helvetica-Bold', color: DARK, letterSpacing: 2, textTransform: 'uppercase' }}>
+            {client?.name ?? '-'}
           </Text>
+          {client?.phone && <Text style={{ fontSize: 8.5, color: GREY, marginTop: 3 }}>{client.phone}</Text>}
+        </View>
+        <View style={{ alignItems: 'flex-end' }}>
+          <Text style={{ fontSize: 11, fontFamily: 'Helvetica-Bold', color: DARK }}>Booking</Text>
+          <Text style={{ fontSize: 9, color: GREY, marginTop: 3 }}>Tanggal : {formatDate(invoice.invoice_date)}</Text>
+          {invoice.due_date && <Text style={{ fontSize: 9, color: GREY, marginTop: 2 }}>Jatuh Tempo : {formatDate(invoice.due_date)}</Text>}
         </View>
       </View>
-
-      {/* Dotted divider */}
-      <View style={{ borderTopWidth: 1.5, borderTopColor: PINK, borderTopStyle: 'dashed', marginHorizontal: 40, marginBottom: 12 }} />
 
       {/* ── TABLE ── */}
-      <View style={{ padding: '0 40' }}>
-        <View style={{ flexDirection: 'row', paddingBottom: 8, marginBottom: 2 }}>
-          <Text style={{ flex: 2.5, fontSize: 8, fontFamily: 'Helvetica-Bold', color: PINK, textTransform: 'uppercase' }}>SERVICE / ITEM</Text>
-          <Text style={{ width: 32, fontSize: 8, fontFamily: 'Helvetica-Bold', color: PINK, textAlign: 'center', textTransform: 'uppercase' }}>QTY</Text>
-          <Text style={{ flex: 1, fontSize: 8, fontFamily: 'Helvetica-Bold', color: PINK, textAlign: 'right', textTransform: 'uppercase' }}>PRICE</Text>
-          <Text style={{ flex: 1, fontSize: 8, fontFamily: 'Helvetica-Bold', color: PINK, textAlign: 'right', textTransform: 'uppercase' }}>TOTAL</Text>
+      <View style={{ margin: '0 40' }}>
+        {/* Table header */}
+        <View style={{ flexDirection: 'row', backgroundColor: DARK, padding: '8 10' }}>
+          <Text style={{ flex: 2, fontSize: 8, fontFamily: 'Helvetica-Bold', color: 'white', textTransform: 'uppercase', letterSpacing: 1 }}>SERVICE</Text>
+          <Text style={{ flex: 1, fontSize: 8, fontFamily: 'Helvetica-Bold', color: 'white', textTransform: 'uppercase', letterSpacing: 1, textAlign: 'center' }}>DURASI</Text>
+          <Text style={{ flex: 1.5, fontSize: 8, fontFamily: 'Helvetica-Bold', color: 'white', textTransform: 'uppercase', letterSpacing: 1, textAlign: 'center' }}>LOKASI</Text>
+          <Text style={{ flex: 1, fontSize: 8, fontFamily: 'Helvetica-Bold', color: 'white', textTransform: 'uppercase', letterSpacing: 1, textAlign: 'right' }}>HARGA</Text>
         </View>
         {items.map((item: any, i: number) => (
-          <View key={i} style={{ flexDirection: 'row', paddingVertical: 9, borderBottomWidth: 1, borderBottomColor: PINK + '44', borderBottomStyle: 'dashed' }}>
-            <Text style={{ flex: 2.5, fontSize: 9.5, color: '#1F2937' }}>{item.description}</Text>
-            <Text style={{ width: 32, fontSize: 9.5, color: '#555', textAlign: 'center' }}>{item.quantity}</Text>
-            <Text style={{ flex: 1, fontSize: 9.5, color: '#555', textAlign: 'right' }}>{formatRupiah(item.unit_price)}</Text>
-            <Text style={{ flex: 1, fontSize: 9.5, fontFamily: 'Helvetica-Bold', color: PINK, textAlign: 'right' }}>{formatRupiah(item.subtotal)}</Text>
+          <View key={i} style={{ flexDirection: 'row', padding: '10 10', borderBottomWidth: 1, borderBottomColor: ROSE_LIGHT, borderBottomStyle: 'solid', backgroundColor: i % 2 === 0 ? 'white' : CREAM }}>
+            <Text style={{ flex: 2, fontSize: 9.5, color: DARK, fontFamily: 'Helvetica-Bold' }}>{item.description}</Text>
+            <Text style={{ flex: 1, fontSize: 9, color: GREY, textAlign: 'center' }}>{item.durasi ?? '-'}</Text>
+            <Text style={{ flex: 1.5, fontSize: 9, color: GREY, textAlign: 'center' }}>{item.lokasi ?? '-'}</Text>
+            <Text style={{ flex: 1, fontSize: 9.5, color: DARK, textAlign: 'right', fontFamily: 'Helvetica-Bold' }}>{formatRupiah(item.unit_price)}</Text>
           </View>
         ))}
       </View>
 
-      {/* Dotted divider */}
-      <View style={{ borderTopWidth: 1.5, borderTopColor: PINK, borderTopStyle: 'dashed', marginHorizontal: 40, marginTop: 12, marginBottom: 14 }} />
-
       {/* ── TOTALS + PAYMENT ── */}
-      <View style={{ flexDirection: 'row', padding: '0 40 14 40' }}>
+      <View style={{ flexDirection: 'row', padding: '16 40 14 40' }}>
+        {/* Left: payment method */}
         <View style={{ flex: 1, marginRight: 20 }}>
-          {[
-            { label: 'SUBTOTAL', value: formatRupiah(invoice.subtotal), bold: true },
-            { label: 'DISCOUNT', value: `- ${formatRupiah(invoice.discount)}`, bold: false },
-          ].map(({ label, value, bold }) => (
-            <View key={label} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 5, borderBottomWidth: 1, borderBottomColor: PINK + '44', borderBottomStyle: 'dashed' }}>
-              <Text style={{ fontSize: 9, fontFamily: bold ? 'Helvetica-Bold' : 'Helvetica', color: bold ? PINK : '#555' }}>{label}</Text>
-              <Text style={{ fontSize: 9, color: '#555' }}>{value}</Text>
-            </View>
-          ))}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingTop: 8 }}>
-            <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: PINK }}>TOTAL</Text>
-            <Text style={{ fontSize: 14, fontFamily: 'Helvetica-Bold', color: PINK }}>{formatRupiah(invoice.total)}</Text>
-          </View>
+          <Text style={{ fontSize: 8.5, fontFamily: 'Helvetica-Bold', color: DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Metode Pembayaran:</Text>
+          {muse?.bank_holder && <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: DARK, marginBottom: 2 }}>{muse.bank_holder}</Text>}
+          {muse?.bank_name && <Text style={{ fontSize: 9, color: GREY, marginBottom: 2 }}>{muse.bank_name}</Text>}
+          {muse?.bank_account && <Text style={{ fontSize: 9.5, fontFamily: 'Helvetica-Bold', color: DARK }}>{muse.bank_account}</Text>}
         </View>
+
+        {/* Right: totals */}
         <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 8, fontFamily: 'Helvetica-Bold', color: PINK, textTransform: 'uppercase', marginBottom: 8 }}>PAYMENT METHOD</Text>
-          {muse?.bank_name && <Text style={{ fontSize: 9, color: '#555', marginBottom: 2 }}>Bank <Text style={{ fontFamily: 'Helvetica-Bold', color: '#1F2937' }}>{muse.bank_name}</Text></Text>}
-          {muse?.bank_holder && <Text style={{ fontSize: 9, color: '#555', marginBottom: 2 }}>a.n {muse.bank_holder}</Text>}
-          {muse?.bank_account && <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: '#1F2937' }}>{muse.bank_account}</Text>}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#E5D5D0', borderBottomStyle: 'solid' }}>
+            <Text style={{ fontSize: 9, color: GREY }}>Subtotal:</Text>
+            <Text style={{ fontSize: 9, color: DARK }}>{formatRupiah(invoice.total)}</Text>
+          </View>
+          {dpPercent > 0 && (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: '#E5D5D0', borderBottomStyle: 'solid' }}>
+              <Text style={{ fontSize: 9, color: GREY }}>DP {dpPercent}% :</Text>
+              <Text style={{ fontSize: 9, color: DARK }}>{formatRupiah(dpAmount)}</Text>
+            </View>
+          )}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: '8 10', backgroundColor: ROSE_LIGHT, marginTop: 4 }}>
+            <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: DARK }}>{dpPercent > 0 ? 'Kekurangan' : 'TOTAL'}</Text>
+            <Text style={{ fontSize: 12, fontFamily: 'Helvetica-Bold', color: ROSE }}>{formatRupiah(dpPercent > 0 ? kekurangan : invoice.total)}</Text>
+          </View>
         </View>
       </View>
 
-      {/* Dotted divider */}
-      <View style={{ borderTopWidth: 1.5, borderTopColor: PINK, borderTopStyle: 'dashed', marginHorizontal: 40, marginBottom: 14 }} />
+      {/* Rose divider */}
+      <View style={{ height: 1.5, backgroundColor: ROSE, marginHorizontal: 40, marginBottom: 14 }} />
 
-      {/* ── FOOTER ── */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: '0 40' }}>
-        <View>
-          <Text style={{ fontSize: 14, fontFamily: 'Helvetica-Bold', color: PINK, fontStyle: 'italic' }}>Thank You! ♥</Text>
-          <Text style={{ fontSize: 7.5, color: '#9CA3AF', marginTop: 4 }}>{muse?.invoice_footer ?? 'Atas kepercayaan dan kerjasamanya.'}</Text>
+      {/* ── FOOTER: NOTE + TERIMAKASIH ── */}
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', padding: '0 40' }}>
+        <View style={{ flex: 1, marginRight: 20 }}>
+          <Text style={{ fontSize: 8.5, fontFamily: 'Helvetica-Bold', color: DARK, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Note :</Text>
+          {invoice.notes
+            ? <Text style={{ fontSize: 8.5, color: GREY, lineHeight: 1.6 }}>{invoice.notes}</Text>
+            : <Text style={{ fontSize: 8.5, color: GREY, lineHeight: 1.6 }}>Booking wajib DP{'\n'}Harga bisa menyesuaikan kebutuhan</Text>
+          }
         </View>
-        {qrCode && (
-          <View style={{ alignItems: 'center' }}>
-            <Image src={qrCode} style={{ width: 56, height: 56 }} />
-            <Text style={{ fontSize: 7, color: '#9CA3AF', marginTop: 3, textAlign: 'center' }}>SCAN QR</Text>
-          </View>
-        )}
+        <View style={{ alignItems: 'flex-end' }}>
+          <Text style={{ fontSize: 10, fontFamily: 'Helvetica-Bold', color: DARK, letterSpacing: 2, marginBottom: 12 }}>TERIMAKASIH</Text>
+          {muse?.instagram
+            ? <Text style={{ fontSize: 14, fontFamily: 'Helvetica-Bold', color: ROSE, fontStyle: 'italic' }}>@{muse.instagram}</Text>
+            : <Text style={{ fontSize: 14, fontFamily: 'Helvetica-Bold', color: ROSE, fontStyle: 'italic' }}>{muse?.name ?? ''}</Text>
+          }
+          {qrCode && <Image src={qrCode} style={{ width: 44, height: 44, marginTop: 8 }} />}
+        </View>
       </View>
     </Page>
   )

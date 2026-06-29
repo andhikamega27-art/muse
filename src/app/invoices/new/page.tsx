@@ -18,6 +18,8 @@ type LineItem = {
   description: string
   quantity: number
   unit_price: number
+  durasi?: string
+  lokasi?: string
 }
 
 function NewInvoiceForm() {
@@ -36,9 +38,10 @@ function NewInvoiceForm() {
   const [dueDate, setDueDate] = useState('')
   const [taxPercent, setTaxPercent] = useState(0)
   const [discount, setDiscount] = useState(0)
+  const [dpPercent, setDpPercent] = useState(0)
   const [notes, setNotes] = useState('')
   const [items, setItems] = useState<LineItem[]>([
-    { description: '', quantity: 1, unit_price: 0 }
+    { description: '', quantity: 1, unit_price: 0, durasi: '', lokasi: '' }
   ])
 
   useEffect(() => {
@@ -89,7 +92,7 @@ function NewInvoiceForm() {
   }
 
   function addItem() {
-    setItems(prev => [...prev, { description: '', quantity: 1, unit_price: 0 }])
+    setItems(prev => [...prev, { description: '', quantity: 1, unit_price: 0, durasi: '', lokasi: '' }])
   }
 
   function removeItem(index: number) {
@@ -133,6 +136,7 @@ function NewInvoiceForm() {
       tax_percent: taxPercent,
       tax_amount,
       discount,
+      dp_percent: dpPercent,
       total,
       status: 'draft',
       notes: notes || null,
@@ -152,6 +156,8 @@ function NewInvoiceForm() {
       quantity: item.quantity,
       unit_price: item.unit_price,
       subtotal: item.quantity * item.unit_price,
+      durasi: item.durasi || null,
+      lokasi: item.lokasi || null,
     }))
 
     const { error: itemsError } = await supabase.from('invoice_items').insert(invoiceItems)
@@ -240,17 +246,16 @@ function NewInvoiceForm() {
               />
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">Qty</label>
+                  <label className="text-xs text-gray-500 mb-1 block">Durasi</label>
                   <input
-                    type="number"
                     className="input"
-                    min={1}
-                    value={item.quantity}
-                    onChange={e => updateItem(index, 'quantity', Number(e.target.value))}
+                    placeholder="cth: Fullday, 4-5 Jam"
+                    value={item.durasi ?? ''}
+                    onChange={e => updateItem(index, 'durasi', e.target.value)}
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">Harga Satuan</label>
+                  <label className="text-xs text-gray-500 mb-1 block">Harga</label>
                   <input
                     type="number"
                     className="input"
@@ -260,8 +265,17 @@ function NewInvoiceForm() {
                   />
                 </div>
               </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Lokasi</label>
+                <input
+                  className="input"
+                  placeholder="cth: Sambikerep Surabaya"
+                  value={item.lokasi ?? ''}
+                  onChange={e => updateItem(index, 'lokasi', e.target.value)}
+                />
+              </div>
               <p className="text-xs text-right text-gray-500 font-medium">
-                Subtotal: {formatRupiah(item.quantity * item.unit_price)}
+                Total: {formatRupiah(item.unit_price)}
               </p>
             </div>
           ))}
@@ -271,30 +285,36 @@ function NewInvoiceForm() {
           </button>
         </div>
 
-        {/* Pajak & diskon */}
+        {/* Pajak, Diskon & DP */}
         <div className="card space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="label">Pajak (%)</label>
-              <input
-                type="number"
-                className="input"
-                min={0}
-                max={100}
-                value={taxPercent}
-                onChange={e => setTaxPercent(Number(e.target.value))}
-              />
+              <input type="number" className="input" min={0} max={100}
+                value={taxPercent} onChange={e => setTaxPercent(Number(e.target.value))} />
             </div>
             <div>
               <label className="label">Diskon (Rp)</label>
-              <input
-                type="number"
-                className="input"
-                min={0}
-                value={discount}
-                onChange={e => setDiscount(Number(e.target.value))}
-              />
+              <input type="number" className="input" min={0}
+                value={discount} onChange={e => setDiscount(Number(e.target.value))} />
             </div>
+          </div>
+          <div>
+            <label className="label">DP (%)</label>
+            <div className="flex gap-2">
+              {[0, 50, 100].map(p => (
+                <button key={p} type="button"
+                  onClick={() => setDpPercent(p)}
+                  className={`flex-1 py-2 rounded-xl text-sm font-bold border transition-colors ${dpPercent === p ? 'bg-violet-600 text-white border-violet-600' : 'bg-white text-gray-600 border-gray-200'}`}>
+                  {p === 0 ? 'Tidak ada' : `${p}%`}
+                </button>
+              ))}
+            </div>
+            {dpPercent > 0 && (
+              <p className="text-xs text-gray-500 mt-1">
+                DP: {formatRupiah(Math.round(subtotal * dpPercent / 100))} · Sisa: {formatRupiah(Math.round(subtotal * (100 - dpPercent) / 100))}
+              </p>
+            )}
           </div>
 
           <div className="border-t border-gray-100 pt-3 space-y-1">

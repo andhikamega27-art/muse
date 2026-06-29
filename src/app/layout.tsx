@@ -11,8 +11,16 @@ const nunito = Nunito({
 
 export const metadata: Metadata = {
   title: 'Muse Invoice',
-  description: 'Aplikasi invoicing untuk muse & model profesional',
+  description: 'Aplikasi invoice & booking untuk model dan talent profesional',
   manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'Muse',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
 }
 
 export const viewport: Viewport = {
@@ -27,6 +35,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="id">
       <body className={nunito.className}>
         {children}
+        <script dangerouslySetInnerHTML={{ __html: `
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+              navigator.serviceWorker.register('/sw.js').catch(() => {})
+            })
+          }
+        `}} />
         <Toaster
           position="top-center"
           toastOptions={{

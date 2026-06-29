@@ -92,6 +92,7 @@ export type Invoice = {
   total: number
   status: InvoiceStatus
   notes?: string
+  dp_percent?: number
   pdf_url?: string
   share_token: string
   paid_at?: string
@@ -110,6 +111,8 @@ export type InvoiceItem = {
   quantity: number
   unit_price: number
   subtotal: number
+  durasi?: string
+  lokasi?: string
 }
 
 export type DailyReport = {

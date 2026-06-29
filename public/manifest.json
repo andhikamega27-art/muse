@@ -1,0 +1,19 @@
+{
+  "name": "Muse Invoice",
+  "short_name": "Muse",
+  "description": "Aplikasi invoice & booking untuk model dan talent profesional",
+  "start_url": "/dashboard",
+  "display": "standalone",
+  "background_color": "#F3F4F8",
+  "theme_color": "#7C3AED",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"]
+}
