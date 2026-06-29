@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import BottomNav from '@/components/ui/BottomNav'
+import InstallBanner from '@/components/ui/InstallBanner'
 import { format, isSameDay, parseISO } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { Schedule } from '@/types'
@@ -181,6 +182,8 @@ export default function DashboardPage() {
           </div>
         </div>
       </div>
+
+      <InstallBanner />
 
       <div className="px-4 pt-5 space-y-5">
 
